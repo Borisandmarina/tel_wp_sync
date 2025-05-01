@@ -21,6 +21,5 @@ if __name__ == '__main__':
     app.run_webhook(
         listen="0.0.0.0",
         port=10000,
-        webhook_path=WEBHOOK_PATH,
         webhook_url=WEBHOOK_URL
     )
