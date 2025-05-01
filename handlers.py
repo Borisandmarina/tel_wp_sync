@@ -18,7 +18,10 @@ menu_keyboard = [
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id not in ADMIN_IDS:
         return
-    await update.message.reply_text("Выберите действие:", reply_markup=InlineKeyboardMarkup(menu_keyboard))
+    await update.message.reply_text(
+    "Выберите действие:",
+    reply_markup=InlineKeyboardMarkup(menu_keyboard)
+)
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query

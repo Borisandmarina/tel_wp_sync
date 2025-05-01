@@ -6,8 +6,7 @@ import config
 import scheduler
 
 if __name__ == '__main__':
-    app = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).build()
+    app = ApplicationBuilder().token(config.TELEGRAM_BOT_TOKEN).post_init(scheduler.post_init).build()
     setup_handlers(app)
-    scheduler.start_timer_check(app)
     print("Bot started...")
     app.run_polling()
