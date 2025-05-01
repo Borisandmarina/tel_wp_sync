@@ -1,27 +1,30 @@
+# tel_wp_sync/wordpress.py
+import config
 import requests
 import state
-import config
+import base64
+
+def get_auth_header():
+    creds = f"{config.WP_USERNAME}:{config.WP_APP_PASSWORD}"
+    encoded = base64.b64encode(creds.encode()).decode()
+    return {"Authorization": f"Basic {encoded}"}
 
 def update_wp():
-    data = state.get_state()
-    current = data["current"]
-    text = data[current]["text"]
-    image_url = f"{config.MEDIA_BASE_URL}/{data[current]['image']}"
-
-    content_html = f'<img src="{image_url}" alt="{current}"><p>{text}</p>'
-
-    headers = {
-        "Authorization": f"Bearer {config.WP_API_TOKEN}",
-        "Content-Type": "application/json"
-    }
+    state_key = state.get_current_state()
+    text = state.get_text(state_key)
+    image_url = f"{config.MEDIA_BASE_URL}/{state_key}.png"
 
     payload = {
-        "content": content_html
+        "content": f"<p><img src=\"{image_url}\"></p><p>{text}</p>"
     }
 
-    url = f"{config.WP_API_URL}/wp/v2/pages/{config.WP_PAGE_ID}"
+    response = requests.put(
+        f"{config.WP_API_URL}/{config.WP_PAGE_ID}",
+        headers=get_auth_header(),
+        json=payload
+    )
+
     try:
-        response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Ошибка обновления WordPress: {e}")
+    except Exception:
+        print("Ошибка при обновлении страницы:", response.status_code, response.text)

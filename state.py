@@ -1,3 +1,4 @@
+# tel_wp_sync/state.py
 import json
 from datetime import datetime
 from pathlib import Path
@@ -28,8 +29,11 @@ def save_state(data):
     with open(STATE_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-def get_state():
-    return load_state()
+def get_current_state():
+    return load_state()["current"]
+
+def get_text(color):
+    return load_state()[color]["text"]
 
 def set_state(color):
     state = load_state()
@@ -46,6 +50,14 @@ def set_text(color, text):
 def set_timer(timestamp):
     state = load_state()
     state["timer"] = timestamp
+    save_state(state)
+
+def get_timer():
+    return load_state().get("timer", "")
+
+def clear_timer():
+    state = load_state()
+    state["timer"] = ""
     save_state(state)
 
 def check_timer_due():
